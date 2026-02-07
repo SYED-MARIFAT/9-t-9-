@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Heart Beat Animation</title>
+<style>
+    body {
+        margin: 0;
+        background: black;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Arial', sans-serif;
+    }
+
+    canvas {
+        position: absolute;
+    }
+
+    .text {
+        position: absolute;
+        top: 60px;
+        color: #6ecbff;
+        font-size: 36px;
+        text-shadow: 0 0 20px #00aaff;
+        animation: glow 1.5s infinite alternate;
+    }
+
+    @keyframes glow {
+        from { opacity: 0.6; }
+        to { opacity: 1; }
+    }
+</style>
+</head>
+<body>
+
+<div class="text">I Love You shaista</div>
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+const particleCount = 900;
+let time = 0;
+
+function heart(t) {
+    return {
+        x: 16 * Math.pow(Math.sin(t), 3),
+        y: -(13 * Math.cos(t) - 5 * Math.cos(2*t)
+           - 2 * Math.cos(3*t) - Math.cos(4*t))
+    };
+}
+
+class Particle {
+    constructor() {
+        this.reset();
+    }
+
+    reset() {
+        const t = Math.random() * Math.PI * 2;
+        const h = heart(t);
+        this.x = canvas.width / 2 + h.x * 12;
+        this.y = canvas.height / 2 + h.y * 12;
+        this.size = Math.random() * 2 + 1;
+        this.alpha = Math.random();
+    }
+
+    draw(scale) {
+        ctx.fillStyle = `rgba(0,170,255,${this.alpha})`;
+        ctx.beginPath();
+        ctx.arc(
+            canvas.width / 2 + (this.x - canvas.width / 2) * scale,
+            canvas.height / 2 + (this.y - canvas.height / 2) * scale,
+            this.size,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+    }
+}
+
+for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const beat = 1 + 0.08 * Math.sin(time);
+
+    particles.forEach(p => p.draw(beat));
+
+    time += 0.1;
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
